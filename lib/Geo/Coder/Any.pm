@@ -63,16 +63,56 @@ sub geocode {
     }
 }
 
+=head1 BUILD
 
+Setup the Geo::Coder::Any object and the steps.
 
+Construction is:
 
+ Geo::Coder::Any->new(
+    steps => [
+        'Google' => {
+            api_key => 'abcdefghjijklmnopqrstuvwxyz'
+        }
+    ] 
+ );
+
+=cut
+
+sub BUILD {
+    my ( $self ) = @_;
+
+    my @stores = @{ $self->steps };
+
+    my @configured_steps = ();
+    while ( @stores ) {
+        my ( $name, $config ) = (shift @stores, shift @stores);
+        die "$name config is not a hash reference"
+            unless $config and ref $config eq 'HASH';
+        my $class = "Geo::Coder::Any::$name";
+        if ( $name =~ /^\+/ ) {
+            $class = $name;
+        }
+        Class::MOP::load_class($class)
+            unless Class::MOP::is_class_loaded($class);
+
+        my $s = $class->new( $config );
+        # Maybe?
+        # croak "Argh, can't configure $class!" unless $s;
+        push @configured_steps, $s if $s;
+    }
+    $self->steps( \@configured_steps );
+
+    return $self;
+
+}
 
 =head1 AUTHOR
 
 ToEat.com Developers, C<< <cpan at toeat.com> >>
 
 J. Shirley C<< <jshirley@toeat.com> >>
-Devin "Fucking" Austin C<< <dhoss@toeat.com> >>
+Devin Austin C<< <dhoss@toeat.com> >>
 
 =head1 BUGS
 
@@ -158,39 +198,5 @@ package Geo::Coder::Any::Location;
 #has 'locality' => ( ... );
 
 # etc etc etc
-
-=head1 BUILD
-
-  set up our object
-
-=cut
-
-sub BUILD {
-    my ( $self ) = @_;
-
-    my @stores = @{ $self->steps };
-
-    my @configured_steps = ();
-    while ( @stores ) {
-        my ( $name, $config ) = (shift @stores, shift @stores);
-        die "$name config is not a hash reference"
-            unless $config and ref $config eq 'HASH';
-        my $class = "Geo::Coder::Any::$name";
-        if ( $name =~ /^\+/ ) {
-            $class = $name;
-        }
-        Class::MOP::load_class($class)
-            unless Class::MOP::is_class_loaded($class);
-
-        my $s = $class->new( $config );
-        # Maybe?
-        # croak "Argh, can't configure $class!" unless $s;
-        push @configured_steps, $s if $s;
-    }
-    $self->steps( \@configured_steps );
-
-    return $self;
-
-}
 
 1;
