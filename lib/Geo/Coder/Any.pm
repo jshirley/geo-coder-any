@@ -28,12 +28,51 @@ Perhaps a little code snippet.
 
 =head1 METHODS 
 
+=cut
+
+## set up "steps"
+## A step is:
+## An atomic geocoding unit, that attempts a lookup and returns a match 
+## or if no match is found it is to return undef.
+## Example: 
+##   $geo->steps([ 'Google' => { api_key => 'abcdef' } ]);
+
+
+has 'steps' => (
+   isa => 'ArrayRef[Object]'
+);
+
+=head1 geocode
+
+  iterate through the steps (see definition above) until we get
+  a valid response
+
+=cut
+
+sub geocode {
+    my ( $self, $location ) = @_;
+    foreach my $step ( @{ $self->steps } ) {
+        my $response = $step->process($location); };
+        if ( $response and $response->{result} ) {
+            # Got a valid response
+            return $response->{result};
+        }
+        if ( $response and $response->{location} ) {
+            $location = $response->{location};
+        }
+    }
+}
+
+
+
+
+
 =head1 AUTHOR
 
 ToEat.com Developers, C<< <cpan at toeat.com> >>
 
 J. Shirley C<< <jshirley@toeat.com> >>
-Devin Austin C<< <dhoss@toeat.com> >>
+Devin "Fucking" Austin C<< <dhoss@toeat.com> >>
 
 =head1 BUGS
 
@@ -88,3 +127,70 @@ under the same terms as Perl itself.
 =cut
 
 1; # End of Geo::Coder::Any
+
+
+### Beging Geo::Coder::Any::Google
+
+package Geo::Coder::Any::Google;
+
+use Moose;
+
+extends 'Geo::Coder::Google';
+
+sub process {
+    my ( $self, $location ) = @_;
+    my @results = $self->geocode( location => $location );
+    if ( $results[0] and $results[0]->{Point} ) {
+        return { result => Geo::Coder::Google::Location->new( $results[0] ) };
+    }
+}
+
+1;
+
+package Geo::Coder::Any::Location;
+
+## Commented until Devin figures out wtf to do with these
+
+#has 'latitude' => ( ... );
+#has 'longitude' => ( ... );
+#has 'country' => ( ... );
+#has 'thoroughfare' => ( ... );
+#has 'locality' => ( ... );
+
+# etc etc etc
+
+=head1 BUILD
+
+  set up our object
+
+=cut
+
+sub BUILD {
+    my ( $self ) = @_;
+
+    my @stores = @{ $self->steps };
+
+    my @configured_steps = ();
+    while ( @stores ) {
+        my ( $name, $config ) = (shift @stores, shift @stores);
+        die "$name config is not a hash reference"
+            unless $config and ref $config eq 'HASH';
+        my $class = "Geo::Coder::Any::$name";
+        if ( $name =~ /^\+/ ) {
+            $class = $name;
+        }
+        Class::MOP::load_class($class)
+            unless Class::MOP::is_class_loaded($class);
+
+        my $s = $class->new( $config );
+        # Maybe?
+        # croak "Argh, can't configure $class!" unless $s;
+        push @configured_steps, $s if $s;
+    }
+    $self->steps( \@configured_steps );
+
+    return $self;
+
+}
+
+1;
