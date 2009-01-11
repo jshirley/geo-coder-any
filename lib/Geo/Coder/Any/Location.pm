@@ -1,12 +1,10 @@
 package Geo::Coder::Any::Location;
 
-## Commented until Devin figures out wtf to do with these
-
-has 'latitude' => ( ... );
-has 'longitude' => ( ... );
-has 'country' => ( ... );
-has 'thoroughfare' => ( ... );
-has 'locality' => ( ... );
+has 'latitude'     => ( is => 'rw',  isa => 'Num' );
+has 'longitude'    => ( is => 'rw',  isa => 'Num');
+has 'country'      => ( is => 'rw',  isa => 'Str', default => 'US' );
+has 'thoroughfare' => ( is => 'rw',  isa => 'Str' );
+#has 'locality'     => ( ... );
 
 # etc etc etc
 

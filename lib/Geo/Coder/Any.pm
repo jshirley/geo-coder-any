@@ -30,13 +30,16 @@ Perhaps a little code snippet.
 
 =cut
 
-## set up "steps"
-## A step is:
-## An atomic geocoding unit, that attempts a lookup and returns a match 
-## or if no match is found it is to return undef.
-## Example: 
-##   $geo->steps([ 'Google' => { api_key => 'abcdef' } ]);
+=head1 steps
+   set up "steps" 
+   A step is: 
+   An atomic geocoding unit, that attempts a lookup and returns a match 
+   or if no match is found it is to return undef.
+   Example: 
 
+    C<$geo->steps([ 'Google' => { api_key => 'abcdef' } ]);>
+
+=cut
 
 has 'steps' => (
    isa => 'ArrayRef[Object]'
