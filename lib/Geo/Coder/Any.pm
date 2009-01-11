@@ -169,34 +169,4 @@ under the same terms as Perl itself.
 1; # End of Geo::Coder::Any
 
 
-### Beging Geo::Coder::Any::Google
 
-package Geo::Coder::Any::Google;
-
-use Moose;
-
-extends 'Geo::Coder::Google';
-
-sub process {
-    my ( $self, $location ) = @_;
-    my @results = $self->geocode( location => $location );
-    if ( $results[0] and $results[0]->{Point} ) {
-        return { result => Geo::Coder::Google::Location->new( $results[0] ) };
-    }
-}
-
-1;
-
-package Geo::Coder::Any::Location;
-
-## Commented until Devin figures out wtf to do with these
-
-#has 'latitude' => ( ... );
-#has 'longitude' => ( ... );
-#has 'country' => ( ... );
-#has 'thoroughfare' => ( ... );
-#has 'locality' => ( ... );
-
-# etc etc etc
-
-1;
