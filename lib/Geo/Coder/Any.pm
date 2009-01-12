@@ -52,6 +52,13 @@ has 'steps' => (
     isa => 'ArrayRef'
 );
 
+has 'geocoders' => (
+    is => 'rw',
+    isa => 'ArrayRef[Object]',
+    clearer => 'reset_geocoders'
+);
+
+
 =head1 METHODS
 
 =head2 geocode($address)
@@ -62,7 +69,7 @@ Iterate through the steps (see definition above) until we get a valid response.
 
 sub geocode {
     my ( $self, $location ) = @_;
-    foreach my $step ( @{ $self->steps } ) {
+    foreach my $step ( @{ $self->geocoders } ) {
         my $response = $step->process($location);
         if ( $response and $response->{result} ) {
             # Got a valid response
@@ -95,8 +102,20 @@ Construction is:
 
 sub BUILD {
     my ( $self ) = @_;
+    $self->_configure_steps( $self->steps );
 
-    my @stores = @{ $self->steps };
+    return $self;
+
+}
+
+sub _configure_steps {
+    my ( $self, $steps ) = @_;
+
+    $self->reset_geocoders;
+
+    return unless $steps and ref $steps eq 'ARRAY';
+
+    my @stores = @$steps;
 
     my @configured_steps = ();
     while ( @stores ) {
@@ -115,9 +134,7 @@ sub BUILD {
         # croak "Argh, can't configure $class!" unless $s;
         push @configured_steps, $s if $s;
     }
-    $self->steps( \@configured_steps );
-    return $self;
-
+    $self->geocoders( \@configured_steps );
 }
 
 =head1 AUTHOR
