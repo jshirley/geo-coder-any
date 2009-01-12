@@ -23,40 +23,44 @@ Perhaps a little code snippet.
 
     use Geo::Coder::Any;
 
-    my $foo = Geo::Coder::Any->new();
-    ...
+    my $ga = Geo::Coder::Any->new();
+    my $results = $ga->geocode('1600 Pennsylvania Ave Washington DC');
 
-=head1 METHODS 
+=head1 ATTRIBUTES
 
-=cut
+=head2 steps
+
+A step is an individual geocoder that will attempt a lookup and returns a match 
+or if no match is found it is to return undef.
 
 =head1 steps
 
-   set up "steps" 
-   A step is: 
-   An atomic geocoding unit, that attempts a lookup and returns a match 
-   or if no match is found it is to return undef.
-   Example: 
 
-    C<$geo->steps([ 'Google' => { api_key => 'abcdef' } ]);>
+This is configured upon creation, such as:
+
+    Geo::Coder::Any->new(
+        steps => [ 'Google' => { api_key => 'abcdef' } ]
+    );
 
 =cut
 
 has 'steps' => (
-   isa => 'ArrayRef[Object]'
+    is => 'rw',
+    isa => 'ArrayRef'
 );
 
-=head1 geocode
+=head1 METHODS
 
-  iterate through the steps (see definition above) until we get
-  a valid response
+=head2 geocode($address)
+
+Iterate through the steps (see definition above) until we get a valid response.
 
 =cut
 
 sub geocode {
     my ( $self, $location ) = @_;
     foreach my $step ( @{ $self->steps } ) {
-        my $response = $step->process($location); };
+        my $response = $step->process($location);
         if ( $response and $response->{result} ) {
             # Got a valid response
             return $response->{result};
@@ -67,7 +71,7 @@ sub geocode {
     }
 }
 
-=head1 BUILD
+=head2 BUILD
 
 Setup the Geo::Coder::Any object and the steps.
 
@@ -93,14 +97,14 @@ sub BUILD {
         my ( $name, $config ) = (shift @stores, shift @stores);
         die "$name config is not a hash reference"
             unless $config and ref $config eq 'HASH';
-        my $class = "Geo::Coder::Any::$name";
+        my $class = join("::", ref($self), $name);
         if ( $name =~ /^\+/ ) {
             $class = $name;
         }
         Class::MOP::load_class($class)
             unless Class::MOP::is_class_loaded($class);
 
-        my $s = $class->new( $config );
+        my $s = $class->new( %$config );
         # Maybe?
         # croak "Argh, can't configure $class!" unless $s;
         push @configured_steps, $s if $s;
@@ -123,8 +127,6 @@ Devin Austin C<< <dhoss@toeat.com> >>
 Please report any bugs or feature requests to C<bug-geo-coder-any at rt.cpan.org>, or through
 the web interface at L<http://rt.cpan.org/NoAuth/ReportBug.html?Queue=Geo-Coder-Any>.  I will be notified, and then you'll
 automatically be notified of progress on your bug as I make changes.
-
-
 
 
 =head1 SUPPORT
