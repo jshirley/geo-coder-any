@@ -10,14 +10,13 @@ unless ( $API_KEY ) {
 
 plan tests => 4;
 
-use_ok('Geo::Coder::Any::Yahoo');
+use_ok('Geo::Coder::Any');
 
-my $ga = Geo::Coder::Any::Yahoo->new( appid => $API_KEY );
-# Geo::Coder::Any->new(
-    #steps => [
-    #    'Yahoo' => { appid => $API_KEY }
-    #]
-#);
+my $ga = Geo::Coder::Any->new(
+    steps => [
+        'Yahoo' => { appid => $API_KEY }
+    ]
+);
 ok($ga, 'created geocoder');
 
 my $result = $ga->geocode('1600 NE Pennsylvania Ave, Washington D.C.');

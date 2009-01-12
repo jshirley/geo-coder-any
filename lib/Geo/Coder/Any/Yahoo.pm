@@ -5,6 +5,19 @@ use Geo::Coder::Any::Location;
 
 extends 'Geo::Coder::Yahoo';
 
+=head1 new
+
+new must be overridden. Geo::Coder::Yahoo assumes $class.
+
+=cut
+
+sub new {
+    my $class = shift;
+    my %args = @_;
+    bless { $class, appid => $args{appid} };
+} 
+
+
 sub process {
     my ( $self, $location ) = @_;
     my @results = $self->geocode( location => $location );

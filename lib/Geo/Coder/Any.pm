@@ -63,10 +63,6 @@ Iterate through the steps (see definition above) until we get a valid response.
 sub geocode {
     my ( $self, $location ) = @_;
     foreach my $step ( @{ $self->steps } ) {
-       ## getting some goofy results with ::Any::Yahoo. 
-       ## Step: Geo::Coder::Yahoo=HASH(0x8fa3d20) at lib/Geo/Coder/Any.pm line 66.
-       ## is what is being warn'd
-       warn "Step: $step\n";
         my $response = $step->process($location);
         if ( $response and $response->{result} ) {
             # Got a valid response
@@ -111,7 +107,6 @@ sub BUILD {
         if ( $name =~ /^\+/ ) {
             $class = $name;
         }
-        warn "Class (from BUILD): $class\n";
         Class::MOP::load_class($class)
             unless Class::MOP::is_class_loaded($class);
 
@@ -121,7 +116,6 @@ sub BUILD {
         push @configured_steps, $s if $s;
     }
     $self->steps( \@configured_steps );
-    warn "Steps (in BUILD): " . $self->steps; . "\n";
     return $self;
 
 }
