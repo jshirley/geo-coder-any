@@ -31,6 +31,7 @@ Perhaps a little code snippet.
 =cut
 
 =head1 steps
+
    set up "steps" 
    A step is: 
    An atomic geocoding unit, that attempts a lookup and returns a match 
