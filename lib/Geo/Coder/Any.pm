@@ -39,7 +39,10 @@ or if no match is found it is to return undef.
 This is configured upon creation, such as:
 
     Geo::Coder::Any->new(
-        steps => [ 'Google' => { api_key => 'abcdef' } ]
+        steps => [ 
+            'Google' => { api_key => 'abcdef' },
+            'Yahoo'  => { appid   => 'byah'   },
+        ]
     );
 
 =cut
@@ -81,7 +84,10 @@ Construction is:
     steps => [
         'Google' => {
             api_key => 'abcdefghjijklmnopqrstuvwxyz'
-        }
+        },
+        'Yahoo'  => {
+            appid => 'wharrrrgarrrrgarrrrgarrrrrbllll'
+         },
     ] 
  );
 
