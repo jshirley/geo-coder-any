@@ -63,6 +63,10 @@ Iterate through the steps (see definition above) until we get a valid response.
 sub geocode {
     my ( $self, $location ) = @_;
     foreach my $step ( @{ $self->steps } ) {
+       ## getting some goofy results with ::Any::Yahoo. 
+       ## Step: Geo::Coder::Yahoo=HASH(0x8fa3d20) at lib/Geo/Coder/Any.pm line 66.
+       ## is what is being warn'd
+       warn "Step: $step";
         my $response = $step->process($location);
         if ( $response and $response->{result} ) {
             # Got a valid response
