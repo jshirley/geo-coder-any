@@ -23,13 +23,15 @@ my $result = $ga->geocode('1600 NE Pennsylvania Ave, Washington D.C.');
 ok($result, 'got geocode result');
 
 my $expected = {
-    address => '1600 Pennsylvania Ave NW, Washington, DC 20006, USA',
-    administrative_area => 'DC',
-    country => 'US',
-    latitude => -77.0366871,
-    longitude => 38.8987745,
-    sub_administrative_area => '',
-    thoroughfare => '1600 Pennsylvania Ave NW',
+     'country' => 'US',
+     'longitude' => '-118.3387',
+     'state' => 'CA',
+     'zip' => '90028',
+     'city' => 'LOS ANGELES',
+     'latitude' => '34.1016',
+     'warning' => 'The exact location could not be found, here is the closest match: Hollywood Blvd At N Highland Ave, Los Angeles, CA 90028',
+     'address' => 'HOLLYWOOD BLVD AT N HIGHLAND AVE',
+     'precision' => 'address'
 };
 
 is_deeply($result, $expected, 'proper result');
