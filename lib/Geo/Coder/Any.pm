@@ -94,7 +94,7 @@ sub BUILD {
         my ( $name, $config ) = (shift @stores, shift @stores);
         die "$name config is not a hash reference"
             unless $config and ref $config eq 'HASH';
-        my $class = "Geo::Coder::Any::$name";
+        my $class = join("::", ref($self), $name);
         if ( $name =~ /^\+/ ) {
             $class = $name;
         }
