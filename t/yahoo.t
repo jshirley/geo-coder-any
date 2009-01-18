@@ -1,5 +1,7 @@
 use Test::More;
 
+## use this key for testing: dIg5UJDV34F2VnuxrMYDcGd2WscAdhHYz6xxn4iZbcTgA4LBmbNWKkza_aAqgmc-
+
 my $API_KEY = $ENV{YAHOO_APIKEY};
 
 unless ( $API_KEY ) {
@@ -11,6 +13,7 @@ unless ( $API_KEY ) {
 plan tests => 4;
 
 use_ok('Geo::Coder::Any');
+
 
 my $ga = Geo::Coder::Any->new(
     steps => [

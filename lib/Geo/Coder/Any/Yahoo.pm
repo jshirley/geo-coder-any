@@ -11,17 +11,10 @@ new must be overridden. Geo::Coder::Yahoo assumes $class.
 
 =cut
 
-sub new {
-    my ( $class, %args ) = @_;
-    warn "Class: $class, Args: " . $args{appid};
-    bless { $class, appid => $args{appid} };
-} 
-
-
 sub process {
     my ( $self, $location ) = @_;
     my @results = $self->geocode( location => $location );
-    if ( $results[0] and $results[0]->{Point} ) {
+    if ( $results[0] and $results[0]->{latitude} and $results[0]->{longitude}  ) {
         my $rs = Geo::Coder::Any::Location->new($self->_normalize($results[0]));
         return { result => $rs };
     }
