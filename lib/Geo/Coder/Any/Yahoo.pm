@@ -35,14 +35,10 @@ be done to populate all the proper hash keys
 sub _normalize {
     my ( $self, $in ) = @_;
 
-    my $aa = $in->{AddressDetails}->{Country}->{AdministrativeArea};
-
-    my $locality = $aa->{SubAdministrativeArea}->{Locality} || 
-                   $aa->{Locality};
     my $rs = {
         'latitude'  => $in->{latitude},
         'longitude' => $in->{longitude},
-        'address'             => $in->{address},
+        'address'   => $in->{address},
        # 'thoroughfare'        => $locality->{Thoroughfare}->{ThoroughfareName},
        # 'locality'            => $locality->{LocalityName},
        # 'administrative_area' => $aa->{AdministrativeAreaName} || '',

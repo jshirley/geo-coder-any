@@ -1,4 +1,5 @@
 use Test::More;
+use Data::Dumper;
 
 ## use this key for testing: dIg5UJDV34F2VnuxrMYDcGd2WscAdhHYz6xxn4iZbcTgA4LBmbNWKkza_aAqgmc-
 
@@ -22,20 +23,18 @@ my $ga = Geo::Coder::Any->new(
 );
 ok($ga, 'created geocoder');
 
-my $result = $ga->geocode('1600 NE Pennsylvania Ave, Washington D.C.');
+my $result = $ga->geocode('Hollywood and Highland, Los Angeles, CA');
 ok($result, 'got geocode result');
 
 my $expected = {
      'country' => 'US',
-     'longitude' => '-118.3387',
-     'state' => 'CA',
-     'zip' => '90028',
-     'city' => 'LOS ANGELES',
-     'latitude' => '34.1016',
-     'warning' => 'The exact location could not be found, here is the closest match: Hollywood Blvd At N Highland Ave, Los Angeles, CA 90028',
-     'address' => 'HOLLYWOOD BLVD AT N HIGHLAND AVE',
-     'precision' => 'address'
+     'longitude' => '-118.339073',
+     'latitude' => '34.101559',
+     'address' => 'Hollywood and Highland',
+     'sub_administrative_area' => '',
+     'administrative_area' => '',
 };
+
 
 is_deeply($result, $expected, 'proper result');
 
