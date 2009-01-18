@@ -1,21 +1,25 @@
 package Geo::Coder::Any::Yahoo;
 
 use Moose;
+use Geo::Coder::Yahoo;
 use Geo::Coder::Any::Location;
 
-extends 'Geo::Coder::Yahoo';
+has appid => ( is => 'ro', isa => 'Str', required => 1 ); 
+has yahoo => ( is => 'ro', isa => 'Geo::Coder::Yahoo', lazy_build => 1 ); #, handles => [qw/geocode/]); 
 
-=head1 new
+sub _build_yahoo { 
 
-new must be overridden. Geo::Coder::Yahoo assumes $class.
+    my $self = shift; 
+    Geo::Coder::Yahoo->new( appid => $self->appid ); 
 
-=cut
+}
+
 
 sub process {
     my ( $self, $location ) = @_;
-    my @results = $self->geocode( location => $location );
-    if ( $results[0] and $results[0]->{latitude} and $results[0]->{longitude}  ) {
-        my $rs = Geo::Coder::Any::Location->new($self->_normalize($results[0]));
+    my $results = $self->yahoo->geocode( location => $location );
+    if ( $results->[0] and $results->[0]->{latitude} and $results->[0]->{longitude}  ) {
+        my $rs = Geo::Coder::Any::Location->new($self->_normalize($results->[0]));
         return { result => $rs };
     }
 }
@@ -36,7 +40,7 @@ sub _normalize {
     my $locality = $aa->{SubAdministrativeArea}->{Locality} || 
                    $aa->{Locality};
     my $rs = {
-        'latitude'  => $in->{country},
+        'latitude'  => $in->{latitude},
         'longitude' => $in->{longitude},
         'address'             => $in->{address},
        # 'thoroughfare'        => $locality->{Thoroughfare}->{ThoroughfareName},
