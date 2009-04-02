@@ -1,5 +1,6 @@
 use Test::More;
-use Data::Dumper;
+
+use lib 't/lib';
 
 my $API_KEY = $ENV{YAHOO_APIKEY};
 
@@ -9,12 +10,14 @@ unless ( $API_KEY ) {
     exit;
 }
 
-plan tests => 5;
+plan tests => 4;
 
 use_ok('Geo::Coder::Any');
 
+
 my $ga = Geo::Coder::Any->new(
     steps => [
+        'Map'   => { },
         'Yahoo' => { apikey => $API_KEY }
     ]
 );
@@ -24,16 +27,13 @@ my $result = $ga->geocode('Hollywood and Highland, Los Angeles, CA');
 ok($result, 'got geocode result');
 
 my $expected = {
-     'country' => 'US',
-     'longitude' => '-118.339073',
-     'latitude' => '34.101559',
-     'address' => 'Hollywood and Highland',
-     'sub_administrative_area' => 'Los Angeles',
-     'administrative_area' => 'CA',
+    'country' => 'US',
+    'longitude' => '-77.035971',
+    'latitude' => '38.898590',
+    'sub_administrative_area' => 'Washington',
+    'address' => '1600 Pennsylvania Ave NW',
+    'administrative_area' => 'DC'
 };
-
 my $result_hash = { map { $_ => $result->$_ } keys %$expected };
 is_deeply($result_hash, $expected, 'proper result');
 
-my $result = $ga->geocode('1600 Pennsylvanie Ave NW, Washington, DC 20006');
-ok($result, 'got geocode result');

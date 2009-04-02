@@ -1,10 +1,11 @@
 package Geo::Coder::Any;
 
+use Carp;
 use Moose;
 
 =head1 NAME
 
-Geo::Coder::Any - The great new Geo::Coder::Any!
+Geo::Coder::Any - Use flexible (and custom) geocoders
 
 =head1 VERSION
 
@@ -17,9 +18,10 @@ our $VERSION = '0.01';
 
 =head1 SYNOPSIS
 
-Quick summary of what the module does.
+Geo::Coder::Any is a processing pipeline for coupling and normalizing
+Geo::Coder modules.  L<Geo::Coder::Google> and L<Geo::Coder::Yahoo> support is
+shipped within this module.
 
-Perhaps a little code snippet.
 
     use Geo::Coder::Any;
 
@@ -41,7 +43,7 @@ This is configured upon creation, such as:
     Geo::Coder::Any->new(
         steps => [ 
             'Google' => { api_key => 'abcdef' },
-            'Yahoo'  => { appid   => 'byah'   },
+            'Yahoo'  => { api_key => 'byah'   },
         ]
     );
 
@@ -68,19 +70,31 @@ Iterate through the steps (see definition above) until we get a valid response.
 =cut
 
 sub geocode {
-    my ( $self, $location ) = @_;
+    my ( $self, $location, @skips ) = @_;
     foreach my $step ( @{ $self->geocoders } ) {
-        my $response = $step->process($location);
+        next if grep { $step == $_ } @skips;
+
+        my $response = eval { $step->process($location); };
+        if ( $@ and 
+            ( Scalar::Util::blessed($@) and $@->isa('Geo::Coder::Any::RetryException') )
+        ){
+            return $self->geocode( $@->location );
+        }
+
         if ( $response and $response->{result} ) {
             # Got a valid response
             return $response->{result};
         }
         if ( $response and $response->{location} ) {
             $location = $response->{location};
+            next;
         }
     }
 }
 
+=head1 INTERNAL METHODS
+
+Here be dragons, you've been warned.  
 =head2 BUILD
 
 Setup the Geo::Coder::Any object and the steps.
@@ -128,10 +142,8 @@ sub _configure_steps {
         }
         Class::MOP::load_class($class)
             unless Class::MOP::is_class_loaded($class);
-
         my $s = $class->new( %$config );
-        # Maybe?
-        # croak "Argh, can't configure $class!" unless $s;
+        croak "Unable to instantiate $class" unless defined $s;
         push @configured_steps, $s if $s;
     }
     $self->geocoders( \@configured_steps );
@@ -139,9 +151,8 @@ sub _configure_steps {
 
 =head1 AUTHOR
 
-ToEat.com Developers, C<< <cpan at toeat.com> >>
-
 J. Shirley C<< <jshirley@toeat.com> >>
+
 Devin Austin C<< <dhoss@toeat.com> >>
 
 =head1 BUGS
@@ -186,7 +197,7 @@ L<http://search.cpan.org/dist/Geo-Coder-Any>
 
 =head1 COPYRIGHT & LICENSE
 
-Copyright 2009 ToEat.com Developers, all rights reserved.
+Copyright 2009 The Authors, all rights reserved.
 
 This program is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.

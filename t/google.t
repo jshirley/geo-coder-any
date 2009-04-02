@@ -26,11 +26,12 @@ my $expected = {
     address => '1600 Pennsylvania Ave NW, Washington, DC 20006, USA',
     administrative_area => 'DC',
     country => 'US',
-    latitude => -77.0366871,
-    longitude => 38.8987745,
+    longitude => -77.0366871,
+    latitude   => 38.8987745,
     sub_administrative_area => '',
     thoroughfare => '1600 Pennsylvania Ave NW',
 };
 
-is_deeply($result, $expected, 'proper result');
+my $result_hash = { map { $_ => $result->$_ } keys %$expected };
+is_deeply($result_hash, $expected, 'proper result');
 
