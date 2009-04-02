@@ -1,52 +1,94 @@
-Geo-Coder-Any
+NAME
+    Geo::Coder::Any - Use flexible (and custom) geocoders
 
-The README is used to introduce the module and provide instructions on
-how to install the module, any machine dependencies it may have (for
-example C compilers and installed libraries) and any other information
-that should be provided before the module is installed.
+VERSION
+    Version 0.01
 
-A README file is required for CPAN modules since CPAN extracts the README
-file from a module distribution so that people browsing the archive
-can use it to get an idea of the module's uses. It is usually a good idea
-to provide version information here so that people can decide whether
-fixes for the module are worth downloading.
+SYNOPSIS
+    Geo::Coder::Any is a processing pipeline for coupling and normalizing
+    Geo::Coder modules. Geo::Coder::Google and Geo::Coder::Yahoo support is
+    shipped within this module.
 
+        use Geo::Coder::Any;
 
-INSTALLATION
+        my $ga = Geo::Coder::Any->new();
+        my $results = $ga->geocode('1600 Pennsylvania Ave Washington DC');
 
-To install this module, run the following commands:
+ATTRIBUTES
+  steps
 
-	perl Makefile.PL
-	make
-	make test
-	make install
+    A step is an individual geocoder that will attempt a lookup and returns
+    a match or if no match is found it is to return undef.
 
-SUPPORT AND DOCUMENTATION
+steps
+    This is configured upon creation, such as:
 
-After installing, you can find documentation for this module with the
-perldoc command.
+        Geo::Coder::Any->new(
+            steps => [ 
+                'Google' => { api_key => 'abcdef' },
+                'Yahoo'  => { api_key => 'byah'   },
+            ]
+        );
 
-    perldoc Geo::Coder::Any
+METHODS
+  geocode($address)
 
-You can also look for information at:
+    Iterate through the steps (see definition above) until we get a valid
+    response.
 
-    RT, CPAN's request tracker
+INTERNAL METHODS
+    Here be dragons, you've been warned. =head2 BUILD
+
+    Setup the Geo::Coder::Any object and the steps.
+
+    Construction is:
+
+     Geo::Coder::Any->new(
+        steps => [
+            'Google' => {
+                api_key => 'abcdefghjijklmnopqrstuvwxyz'
+            },
+            'Yahoo'  => {
+                appid => 'wharrrrgarrrrgarrrrgarrrrrbllll'
+             },
+        ] 
+     );
+
+AUTHOR
+    J. Shirley `<jshirley@toeat.com>'
+
+    Devin Austin `<dhoss@toeat.com>'
+
+BUGS
+    Please report any bugs or feature requests to `bug-geo-coder-any at
+    rt.cpan.org', or through the web interface at
+    http://rt.cpan.org/NoAuth/ReportBug.html?Queue=Geo-Coder-Any. I will be
+    notified, and then you'll automatically be notified of progress on your
+    bug as I make changes.
+
+SUPPORT
+    You can find documentation for this module with the perldoc command.
+
+        perldoc Geo::Coder::Any
+
+    You can also look for information at:
+
+    * RT: CPAN's request tracker
         http://rt.cpan.org/NoAuth/Bugs.html?Dist=Geo-Coder-Any
 
-    AnnoCPAN, Annotated CPAN documentation
+    * AnnoCPAN: Annotated CPAN documentation
         http://annocpan.org/dist/Geo-Coder-Any
 
-    CPAN Ratings
+    * CPAN Ratings
         http://cpanratings.perl.org/d/Geo-Coder-Any
 
-    Search CPAN
+    * Search CPAN
         http://search.cpan.org/dist/Geo-Coder-Any
 
+ACKNOWLEDGEMENTS
+COPYRIGHT & LICENSE
+    Copyright 2009 The Authors, all rights reserved.
 
-COPYRIGHT AND LICENCE
-
-Copyright (C) 2009 ToEat.com Developers
-
-This program is free software; you can redistribute it and/or modify it
-under the same terms as Perl itself.
+    This program is free software; you can redistribute it and/or modify it
+    under the same terms as Perl itself.
 
