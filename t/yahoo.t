@@ -9,7 +9,7 @@ unless ( $API_KEY ) {
     exit;
 }
 
-plan tests => 5;
+plan tests => 6;
 
 use_ok('Geo::Coder::Any');
 
@@ -24,16 +24,29 @@ my $result = $ga->geocode('Hollywood and Highland, Los Angeles, CA');
 ok($result, 'got geocode result');
 
 my $expected = {
-     'country' => 'US',
-     'longitude' => '-118.339073',
-     'latitude' => '34.101559',
-     'address' => 'Hollywood and Highland',
-     'sub_administrative_area' => 'Los Angeles',
-     'administrative_area' => 'CA',
+    'country' => 'US',
+    'longitude' => '-118.339073',
+    'latitude' => '34.101559',
+    'address' => 'Hollywood and Highland',
+    'sub_administrative_area' => 'Los Angeles',
+    'administrative_area' => 'CA',
 };
 
 my $result_hash = { map { $_ => $result->$_ } keys %$expected };
 is_deeply($result_hash, $expected, 'proper result');
 
-my $result = $ga->geocode('1600 Pennsylvanie Ave NW, Washington, DC 20006');
+$result = $ga->geocode('1600 Pennsylvanie Ave NW, Washington, DC 20006');
 ok($result, 'got geocode result');
+
+$expected = {
+    'country' => 'US',
+    'longitude' => '-77.035971',
+    'latitude' => '38.898590',
+    'address' => '1600 Pennsylvania Ave NW',
+    'sub_administrative_area' => 'Washington',
+    'administrative_area' => 'DC',
+};
+
+$result_hash = { map { $_ => $result->$_ } keys %$expected };
+is_deeply($result_hash, $expected, 'proper result');
+
