@@ -7,10 +7,6 @@ use Moose;
 
 Geo::Coder::Any - Use flexible (and custom) geocoders
 
-=head1 VERSION
-
-Version 0.01
-
 =cut
 
 our $VERSION = '0.01';
