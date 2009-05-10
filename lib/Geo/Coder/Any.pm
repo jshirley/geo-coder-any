@@ -136,9 +136,12 @@ sub _configure_steps {
         my ( $name, $config ) = (shift @stores, shift @stores);
         die "$name config is not a hash reference"
             unless $config and ref $config eq 'HASH';
-        my $class = join("::", ref($self), $name);
+        my $class;
         if ( $name =~ /^\+/ ) {
+            $name =~ s/^\+//;
             $class = $name;
+        } else {
+            $class = join("::", ref($self), $name);
         }
         Class::MOP::load_class($class)
             unless Class::MOP::is_class_loaded($class);
