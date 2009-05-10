@@ -1,6 +1,7 @@
 package Geo::Coder::Any::Location;
 
 use Moose;
+use MooseX::AttributeHelpers;
 
 =head1 NAME
 
@@ -56,5 +57,17 @@ has 'sub_administrative_area' => ( is => 'rw',  isa => 'Str', default => '' );
 has 'administrative_area'     => ( is => 'rw',  isa => 'Str', default => '' );
 
 has 'geocoder' => ( is => 'ro', isa => 'Object' );
+
+has 'other_matches' => ( 
+    metaclass => 'Collection::Array',
+    is => 'rw', 
+    isa => 'ArrayRef[Geo::Coder::Any::Location]',
+    default => sub { [] },
+    provides => {
+        'empty' => 'has_others',
+        'push'  => 'add_match',
+        'pop'   => 'remove_match',
+    }
+);
 
 1;
